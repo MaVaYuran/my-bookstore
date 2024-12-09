@@ -2,7 +2,6 @@ package by.mariayuran.my_bookstore.controller;
 
 import by.mariayuran.my_bookstore.dto.ProductDto;
 import by.mariayuran.my_bookstore.service.ProductService;
-import by.mariayuran.my_bookstore.service.SessionObjectHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +15,11 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
-    private final SessionObjectHolder objectHolder;
 
-    public ProductController(ProductService productService, SessionObjectHolder objectHolder) {
+
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.objectHolder = objectHolder;
+
     }
 
     @GetMapping
@@ -32,7 +31,6 @@ public class ProductController {
 
     @GetMapping("/{id}/bucket")
     public String addBucket(@PathVariable Integer id, Principal principal) {
-        objectHolder.addClick();
         if (principal == null) {
             return "redirect:/products";
         }
