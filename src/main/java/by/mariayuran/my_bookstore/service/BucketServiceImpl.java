@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @Service
 public class BucketServiceImpl implements BucketService {
 
@@ -40,16 +41,16 @@ public class BucketServiceImpl implements BucketService {
     }
 
     private List<Product> getCollectRefProductsByIds(List<Integer> productsId) {
-       return productsId.stream()
+        return productsId.stream()
                 .map(productRepository::getOne)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void addProducts(Bucket bucket, List<Integer> productsId) {
+    public void addProducts(Bucket bucket, List<Integer> productIds) {
         List<Product> products = bucket.getProducts();
         List<Product> newProductList = products == null ? new ArrayList<>() : new ArrayList<>(products);
-        newProductList.addAll(getCollectRefProductsByIds(productsId));
+        newProductList.addAll(getCollectRefProductsByIds(productIds));
         bucket.setProducts(newProductList);
         bucketRepository.save(bucket);
     }
@@ -57,24 +58,25 @@ public class BucketServiceImpl implements BucketService {
     @Override
     public BucketDto getBucketByUser(String name) {
         User user = userService.findByName(name);
-        if(user== null || user.getBucket() == null) {
+        if (user == null || user.getBucket() == null) {
             return new BucketDto();
         }
         BucketDto bucketDto = new BucketDto();
         Map<Integer, BucketDetailsDTO> mapByProductId = new HashMap<>();
 
         List<Product> products = user.getBucket().getProducts();
-        for(Product product: products) {
+        for (Product product : products) {
             BucketDetailsDTO detail = mapByProductId.get(product.getId());
-            if(detail==null) {
+            if (detail == null) {
                 mapByProductId.put(product.getId(), new BucketDetailsDTO(product));
-            }else{
+            } else {
                 detail.setAmount(detail.getAmount().add(new BigDecimal(1.0)));
                 detail.setSum(detail.getSum() + Double.valueOf(product.getPrice().toString()));
             }
         }
         bucketDto.setBucketDetails(new ArrayList<>(mapByProductId.values()));
         bucketDto.aggregate();
+
         return bucketDto;
     }
 }
