@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show_sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bookstore_db
+    username: postgres
+    password: root
+
+
